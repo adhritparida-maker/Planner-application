@@ -1,0 +1,3318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Planner App</title>
+    <link rel="icon" type="image/png" href="Screenshot 2026-06-17 215154.png">
+    <style>
+        :root {
+            --theme-primary: #2563eb;
+            --theme-primary-dark: #1d4ed8;
+            --theme-primary-light: #60a5fa;
+            --theme-soft: #eff6ff;
+            --theme-soft-strong: #dbeafe;
+            --theme-tab: #f3f7ff;
+            --theme-border: #cfe0ff;
+            --theme-shadow: rgba(37, 99, 235, 0.16);
+            --theme-on-primary: #ffffff;
+        }
+
+        body.theme-red { --theme-primary: #dc2626; --theme-primary-dark: #991b1b; --theme-primary-light: #f87171; --theme-soft: #fef2f2; --theme-soft-strong: #fecaca; --theme-tab: #fff1f2; --theme-border: #fecaca; --theme-shadow: rgba(220, 38, 38, 0.16); }
+        body.theme-orange { --theme-primary: #ea580c; --theme-primary-dark: #9a3412; --theme-primary-light: #fb923c; --theme-soft: #fff7ed; --theme-soft-strong: #fed7aa; --theme-tab: #fff7ed; --theme-border: #fed7aa; --theme-shadow: rgba(234, 88, 12, 0.16); }
+        body.theme-yellow { --theme-primary: #ca8a04; --theme-primary-dark: #854d0e; --theme-primary-light: #facc15; --theme-soft: #fefce8; --theme-soft-strong: #fde68a; --theme-tab: #fefce8; --theme-border: #fde68a; --theme-shadow: rgba(202, 138, 4, 0.16); }
+        body.theme-green { --theme-primary: #16a34a; --theme-primary-dark: #166534; --theme-primary-light: #4ade80; --theme-soft: #f0fdf4; --theme-soft-strong: #bbf7d0; --theme-tab: #f0fdf4; --theme-border: #bbf7d0; --theme-shadow: rgba(22, 163, 74, 0.16); }
+        body.theme-blue { --theme-primary: #2563eb; --theme-primary-dark: #1d4ed8; --theme-primary-light: #60a5fa; --theme-soft: #eff6ff; --theme-soft-strong: #dbeafe; --theme-tab: #f3f7ff; --theme-border: #cfe0ff; --theme-shadow: rgba(37, 99, 235, 0.16); }
+        body.theme-purple { --theme-primary: #7c3aed; --theme-primary-dark: #5b21b6; --theme-primary-light: #a78bfa; --theme-soft: #f5f3ff; --theme-soft-strong: #ddd6fe; --theme-tab: #f5f3ff; --theme-border: #ddd6fe; --theme-shadow: rgba(124, 58, 237, 0.16); }
+        body.theme-pink { --theme-primary: #db2777; --theme-primary-dark: #9d174d; --theme-primary-light: #f472b6; --theme-soft: #fdf2f8; --theme-soft-strong: #fbcfe8; --theme-tab: #fdf2f8; --theme-border: #fbcfe8; --theme-shadow: rgba(219, 39, 119, 0.16); }
+        body.theme-black { --theme-primary: #111827; --theme-primary-dark: #030712; --theme-primary-light: #4b5563; --theme-soft: #f3f4f6; --theme-soft-strong: #d1d5db; --theme-tab: #f9fafb; --theme-border: #d1d5db; --theme-shadow: rgba(17, 24, 39, 0.16); }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #1f2937;
+            display: flex;
+            justify-content: stretch;
+            align-items: stretch;
+            padding: 0;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: none;
+            height: 100vh;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--theme-primary-dark), var(--theme-primary-light));
+            padding: 16px 24px;
+            color: white;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .header p {
+            margin: 4px 0 0;
+            opacity: 0.85;
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 0 24px 24px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-bar {
+            display: none;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .major-tab-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 18px;
+            background: linear-gradient(90deg,#f8fbff,#ffffff);
+            border-bottom: 1px solid #e6eefc;
+        }
+
+        .major-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .major-tab-button {
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: #f3f7ff;
+            color: #1f2937;
+            font-weight: 800;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .major-tab-button.active {
+            background: white;
+            color: var(--theme-primary-dark);
+            border-color: var(--theme-border);
+            box-shadow: 0 8px 18px var(--theme-shadow);
+        }
+
+        .major-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .major-controls button {
+            position: relative;
+        }
+
+        .major-controls button .indicator {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .major-controls button.has-indicator .indicator {
+            display: block;
+        }
+
+        .sub-tab-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            margin: 14px 0 22px 0;
+            padding: 0 18px;
+        }
+
+        .sub-tab-button {
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #f3f7ff;
+            color: #1f2937;
+            border: 1px solid transparent;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sub-tab-button.active {
+            background: white;
+            color: var(--theme-primary-dark);
+            border-color: var(--theme-border);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid transparent;
+            background: #f3f7ff;
+            color: #1f2937;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #1d4ed8;
+            border-color: #cfe0ff;
+            box-shadow: 0 8px 18px rgba(47, 107, 255, 0.12);
+        }
+
+        .task-box {
+            border: 1px solid #e5efff;
+            background: #f8fbff;
+            border-radius: 22px;
+            padding: 24px;
+            min-height: 360px;
+        }
+
+        .task-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .task-box-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .button-primary {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 14px;
+            background: var(--theme-primary);
+            color: var(--theme-on-primary);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 18px var(--theme-shadow);
+        }
+
+        #taskList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 14px;
+        }
+
+        .task-item {
+            padding: 18px 18px 18px 18px;
+            border-radius: 18px;
+            background: white;
+            border: 1px solid #dee7ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .task-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-title {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .task-meta {
+            margin: 0;
+            color: #475569;
+            font-size: 0.92rem;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .task-meta span {
+            background: #eff6ff;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .task-actions button {
+            background: #f8fafc;
+            border: 1px solid #d1d5db;
+            color: #1f2937;
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .task-actions button:hover {
+            background: #eef2ff;
+        }
+
+        .tab-view {
+            display: none;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(160px, 1fr));
+            gap: 18px;
+        }
+
+        .dashboard-card {
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 14px;
+            font-size: 0.95rem;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .dashboard-card p {
+            margin: 0;
+            font-size: 2.1rem;
+            color: #1d4ed8;
+            font-weight: 800;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-header-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .holiday-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .holiday-toggle input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calendar-navigation button {
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-month-label {
+            min-width: 160px;
+            text-align: center;
+            font-weight: 800;
+            color: var(--theme-primary-dark);
+            font-size: 1.05rem;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            border-radius: 18px;
+            background: white;
+            border: 1px solid #dbeafe;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .calendar-day:hover {
+            transform: translateY(-1px);
+            border-color: #93c5fd;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.45;
+        }
+
+        .calendar-day.selected {
+            border-color: var(--theme-primary);
+            background: var(--theme-soft);
+        }
+
+        .calendar-day.today {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .calendar-day.today .calendar-day-number::after {
+            content: " ●";
+            color: #dc2626;
+            font-size: 0.6rem;
+        }
+
+        .calendar-day-number {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .day-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            z-index: 20;
+        }
+
+        .day-modal-backdrop.active {
+            display: flex;
+        }
+
+        .day-modal-card {
+            width: min(500px, 100%);
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 28px 80px rgba(15, 23, 42, 0.25);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .day-modal-card h2 {
+            margin: 0 0 24px;
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+
+        .day-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .day-modal-close:hover {
+            background: #e2e8f0;
+        }
+
+        .notes-editor {
+            width: 100%;
+            min-height: 400px;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.98rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .notes-editor:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .notes-status {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #64748b;
+            text-align: right;
+        }
+
+        .notes-status.saving {
+            color: #f59e0b;
+        }
+
+        .notes-status.saved {
+            color: #10b981;
+        }
+
+        .calendar-task-badge {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--theme-soft-strong);
+            color: var(--theme-primary-dark);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .calendar-day-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .calendar-holiday-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 8px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .calendar-holiday-label {
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .calendar-task-row.holiday-row {
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .theme-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 8px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-1px);
+        }
+
+        .theme-option.selected {
+            border-color: var(--theme-primary);
+            background: var(--theme-soft);
+        }
+
+        .theme-swatch {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        }
+
+        .theme-swatch-red { background: #dc2626; }
+        .theme-swatch-orange { background: #ea580c; }
+        .theme-swatch-yellow { background: #ca8a04; }
+        .theme-swatch-green { background: #16a34a; }
+        .theme-swatch-blue { background: #2563eb; }
+        .theme-swatch-purple { background: #7c3aed; }
+        .theme-swatch-pink { background: #db2777; }
+        .theme-swatch-black { background: #111827; }
+
+        .theme-option-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #334155;
+            text-transform: capitalize;
+        }
+
+        .calendar-task-list {
+            margin-top: 22px;
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+        }
+
+        .calendar-task-list h3 {
+            margin: 0 0 14px;
+            font-size: 1.05rem;
+        }
+
+        .calendar-task-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid #dbeafe;
+            margin-bottom: 10px;
+        }
+
+        .calendar-task-label {
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            z-index: 10;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(480px, 100%);
+            background: white;
+            border-radius: 24px;
+            padding: 28px 28px 22px;
+            box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+        }
+
+        .modal-card h3 {
+            margin: 0 0 18px;
+            font-size: 1.3rem;
+            color: #0f172a;
+        }
+
+        .modal-field {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .modal-field label {
+            font-size: 0.95rem;
+            color: #1f2937;
+        }
+
+        .modal-field input,
+        .modal-field textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.98rem;
+            outline: none;
+        }
+
+        .modal-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .button-secondary {
+            background: #f1f5f9;
+            border: none;
+            color: #334155;
+            padding: 12px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 620px) {
+            .task-box {
+                padding: 18px;
+            }
+
+            .modal-card {
+                padding: 22px;
+            }
+        }
+        /* Assistant styles */
+        .assistant-button {
+            display: none;
+        }
+
+        .assistant-panel {
+            display: none;
+            position: fixed;
+            right: 22px;
+            bottom: 92px;
+            width: 360px;
+            max-height: 72vh;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 28px 80px rgba(15,23,42,0.18);
+            overflow: hidden;
+            flex-direction: column;
+            z-index: 60;
+        }
+
+        .assistant-panel.fullscreen {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            max-height: none;
+            border-radius: 0;
+            padding: 0;
+            z-index: 1000;
+        }
+
+        .assistant-panel.active {
+            display: flex;
+        }
+
+        .assistant-header {
+            background: linear-gradient(90deg,#2563eb,#60a5fa);
+            color: white;
+            padding: 12px 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .assistant-header .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .assistant-header .fullscreen-toggle {
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: white;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .assistant-create-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .assistant-create-toggle input { width: 16px; height: 16px; }
+
+        .assistant-messages {
+            padding: 12px;
+            overflow: auto;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f8fbff;
+        }
+
+        .assistant-input-row {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #eef2ff;
+            background: white;
+        }
+
+        .assistant-input-row input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+        }
+
+        .assistant-msg.user { align-self: flex-end; background:#2563eb; color:white; padding:8px 12px; border-radius:12px; }
+        .assistant-msg.bot { align-self: flex-start; background:#eef7ff; color:#0f172a; padding:8px 12px; border-radius:12px; }
+
+        .study-grid {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        .study-sidebar {
+            background: white;
+            border: 1px solid #dbeafe;
+            border-radius: 18px;
+            padding: 18px;
+            align-self: start;
+        }
+
+        .study-sidebar h3,
+        .study-main h2 {
+            margin: 0 0 12px;
+        }
+
+        .study-mode-buttons {
+            display: grid;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .study-mode-button {
+            padding: 11px 12px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+            background: #f8fbff;
+            color: #1f2937;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .study-mode-button.active {
+            color: #1d4ed8;
+            background: white;
+            border-color: #93c5fd;
+        }
+
+        .study-main {
+            background: white;
+            border: 1px solid #dbeafe;
+            border-radius: 18px;
+            padding: 20px;
+            min-height: 520px;
+        }
+
+        .study-panel {
+            display: none;
+        }
+
+        .study-panel.active {
+            display: block;
+        }
+
+        .study-chat-messages {
+            height: 360px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f8fbff;
+            border: 1px solid #e5efff;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .study-message {
+            max-width: 82%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+
+        .study-message.user {
+            align-self: flex-end;
+            color: white;
+            background: #2563eb;
+        }
+
+        .study-message.assistant {
+            align-self: flex-start;
+            color: #0f172a;
+            background: #eef7ff;
+        }
+
+        .study-chat-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .study-chat-row input,
+        .study-form input,
+        .study-form select,
+        .study-answer {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 0.98rem;
+            box-sizing: border-box;
+        }
+
+        .study-chat-row input {
+            flex: 1;
+        }
+
+        .study-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .study-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .study-field label {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.92rem;
+        }
+
+        .study-question-box,
+        .study-feedback-box {
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 14px;
+            white-space: pre-wrap;
+            line-height: 1.45;
+        }
+
+        .study-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .study-status {
+            color: #64748b;
+            font-size: 0.92rem;
+            min-height: 22px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 820px) {
+            .study-grid,
+            .study-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .reminder-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .reminder-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: white;
+            border: 1px solid var(--theme-border);
+        }
+
+        .reminder-row.fired {
+            opacity: 0.65;
+        }
+
+        .reminder-details strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #111827;
+            font-size: 1rem;
+        }
+
+        .reminder-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .reminder-meta span {
+            background: var(--theme-soft);
+            color: var(--theme-primary-dark);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-weight: 600;
+        }
+
+        .reminder-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .home-reminder-card {
+            margin-top: 18px;
+            background: var(--theme-soft);
+            border: 1px solid var(--theme-border);
+            border-radius: 20px;
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .home-reminder-card h3 {
+            margin: 0 0 6px;
+            color: #111827;
+        }
+
+        .home-reminder-card p {
+            margin: 0;
+            color: #64748b;
+        }
+
+        .reminder-alert-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            z-index: 100;
+            animation: reminderBackdropPulse 1.2s ease-in-out infinite;
+        }
+
+        .reminder-alert-backdrop.active {
+            display: flex;
+        }
+
+        @keyframes reminderBackdropPulse {
+            0%, 100% { background: rgba(15, 23, 42, 0.82); }
+            50% { background: rgba(127, 29, 29, 0.72); }
+        }
+
+        .reminder-alert-card {
+            width: min(520px, 100%);
+            background: white;
+            border-radius: 28px;
+            padding: 36px 32px 28px;
+            text-align: center;
+            box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
+            border: 4px solid #ef4444;
+            animation: reminderCardShake 0.55s ease-in-out infinite;
+        }
+
+        @keyframes reminderCardShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .reminder-alert-icon {
+            font-size: 3rem;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .reminder-alert-card h2 {
+            margin: 0 0 12px;
+            color: #991b1b;
+            font-size: 1.8rem;
+        }
+
+        .reminder-alert-text {
+            margin: 0 0 8px;
+            font-size: 1.15rem;
+            color: #111827;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .reminder-alert-time {
+            margin: 0 0 24px;
+            color: #64748b;
+        }
+
+        .reminder-alert-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .button-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .reminder-sound-bar {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: #111827;
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+            z-index: 90;
+            max-width: min(640px, calc(100% - 32px));
+        }
+
+        .reminder-sound-bar.active {
+            display: flex;
+        }
+
+        .reminder-sound-bar strong {
+            flex: 1;
+            min-width: 0;
+        }
+    </style>
+</head>
+<body class="theme-blue">
+    <div class="page-container">
+        <div class="header">
+            <h1>Planner</h1>
+            <p>Use to organize your tasks and activities and do much more :D.</p>
+        </div>
+
+        <div class="content">
+            <div class="major-tab-bar">
+                <div class="major-tabs">
+                    <button class="major-tab-button active" data-major="School">School</button>
+                    <button class="major-tab-button" data-major="Home">Home</button>
+                </div>
+                <div class="major-controls">
+                    <button id="changeThemeButton" class="button-secondary">Change theme</button>
+                    <button id="topCalendarButton" class="button-secondary"><span>Calendar</span><span class="indicator"></span></button>
+                    <button id="topAiButton" class="button-primary"><span>AI</span><span class="indicator"></span></button>
+                </div>
+            </div>
+
+            <div class="sub-tab-bar">
+                <button class="sub-tab-button active" data-sub="Dashboard">Dashboard</button>
+                <button class="sub-tab-button" data-sub="Tasks">Tasks</button>
+                <button class="sub-tab-button" data-sub="Activities">Activities</button>
+                <button class="sub-tab-button" data-sub="Notes">Notes</button>
+                <button class="sub-tab-button school-only" data-sub="Study">AI Study</button>
+                <button class="sub-tab-button home-only" data-sub="Reminders" style="display:none;">Reminders</button>
+            </div>
+
+            <div class="tab-view active" data-view="Dashboard">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Tasks Due Today</h3>
+                        <p id="countToday">0</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Tasks Due This Week</h3>
+                        <p id="countWeek">0</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Overdue Tasks</h3>
+                        <p id="countOverdue">0</p>
+                    </div>
+                </div>
+                <div id="homeReminderQuickAccess" class="home-reminder-card" style="display:none;">
+                    <div>
+                        <h3>Reminders</h3>
+                        <p id="homeReminderSummary">No upcoming reminders.</p>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="button" class="button-secondary" id="openRemindersTabButton">View Reminders</button>
+                        <button type="button" class="button-primary" id="openReminderModalFromDashboard">Add Reminder</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-view" data-view="Tasks">
+                <div class="task-box">
+                    <div class="task-box-header">
+                        <div>
+                            <h2 id="activeTabLabel">School Tasks</h2>
+                            <p style="margin: 6px 0 0; color:#64748b; font-size:0.95rem;">Tasks saved separately by category.</p>
+                        </div>
+                        <button class="button-primary" id="openModalButton">Add Task</button>
+                    </div>
+
+                    <div id="activityList"></div>
+                    <ul id="taskList"></ul>
+                </div>
+            </div>
+
+            <div class="tab-view" data-view="Calendar">
+                <div class="calendar-header">
+                    <div>
+                        <h2 id="calendarMonthTitle">Calendar</h2>
+                        <p style="margin: 8px 0 0; color:#64748b; font-size:0.95rem;">Click a date to see scheduled activities and holidays.</p>
+                    </div>
+                    <div class="calendar-header-controls">
+                        <label class="holiday-toggle">
+                            <input type="checkbox" id="showHolidaysToggle" checked>
+                            Show holidays
+                        </label>
+                        <div class="calendar-navigation">
+                            <button type="button" id="prevMonthButton">← Previous</button>
+                            <span id="calendarMonthLabel" class="calendar-month-label"></span>
+                            <button type="button" id="nextMonthButton">Next →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-weekdays">
+                    <div class="calendar-weekday">Sun</div>
+                    <div class="calendar-weekday">Mon</div>
+                    <div class="calendar-weekday">Tue</div>
+                    <div class="calendar-weekday">Wed</div>
+                    <div class="calendar-weekday">Thu</div>
+                    <div class="calendar-weekday">Fri</div>
+                    <div class="calendar-weekday">Sat</div>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <div id="calendarTasksList" class="calendar-task-list"></div>
+            </div>
+
+            <div class="tab-view" data-view="Reminders">
+                <div class="task-box">
+                    <div class="task-box-header">
+                        <div>
+                            <h2>Home Reminders</h2>
+                            <p style="margin: 6px 0 0; color:#64748b; font-size:0.95rem;">Schedule alerts with a popup, sound, or both.</p>
+                        </div>
+                        <button type="button" class="button-primary" id="openReminderModalButton">Add Reminder</button>
+                    </div>
+                    <div id="reminderList" class="reminder-list"></div>
+                </div>
+            </div>
+
+            <div class="tab-view" data-view="Notes">
+                <div class="task-box">
+                    <div class="task-box-header">
+                        <div>
+                            <h2>Notes</h2>
+                            <p style="margin: 6px 0 0; color:#64748b; font-size:0.95rem;">Your notes are saved automatically.</p>
+                        </div>
+                        <button class="button-primary" id="newNotePageButton">New Page</button>
+                    </div>
+                    <div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+                        <button id="prevNotePageButton" class="button-secondary">← Previous</button>
+                        <span id="notePageIndicator" style="font-weight: 700; color: #64748b;">Page 1</span>
+                        <button id="nextNotePageButton" class="button-secondary">Next →</button>
+                    </div>
+                    <textarea id="notesEditor" class="notes-editor" placeholder="Type your notes here..."></textarea>
+                    <div id="notesStatus" class="notes-status">Ready</div>
+                </div>
+            </div>
+
+            <div class="tab-view" data-view="Study">
+                <div class="task-box">
+                    <div class="task-box-header">
+                        <div>
+                            <h2>AI Study Partner</h2>
+                            <p style="margin: 6px 0 0; color:#64748b; font-size:0.95rem;">Learn concepts, generate practice questions, and get feedback.</p>
+                        </div>
+                    </div>
+                    <div class="study-grid">
+                        <aside class="study-sidebar">
+                            <h3>Progress</h3>
+                            <p style="margin: 0; color:#64748b;">Questions Answered: <strong id="studyQuestionsAnswered">0</strong></p>
+                            <div class="study-mode-buttons">
+                                <button type="button" class="study-mode-button active" data-study-mode="Learning">Learning Mode</button>
+                                <button type="button" class="study-mode-button" data-study-mode="Testing">Testing Mode</button>
+                            </div>
+                            <button type="button" class="button-secondary" id="studyClearChatButton">Clear Learning Chat</button>
+                        </aside>
+
+                        <main class="study-main">
+                            <section class="study-panel active" id="studyLearningPanel">
+                                <h2>Learning Mode</h2>
+                                <div class="study-chat-messages" id="studyChatMessages"></div>
+                                <div class="study-chat-row">
+                                    <input id="studyChatInput" placeholder="Ask a question...">
+                                    <button type="button" class="button-primary" id="studyChatSend">Send</button>
+                                </div>
+                                <div class="study-status" id="studyLearningStatus"></div>
+                            </section>
+
+                            <section class="study-panel" id="studyTestingPanel">
+                                <h2>Testing Mode</h2>
+                                <div class="study-form">
+                                    <div class="study-field">
+                                        <label for="studyTopicInput">Topic</label>
+                                        <input id="studyTopicInput" placeholder="Fractions, photosynthesis, World War II...">
+                                    </div>
+                                    <div class="study-field">
+                                        <label for="studyDifficultySelect">Difficulty</label>
+                                        <select id="studyDifficultySelect">
+                                            <option>Easy</option>
+                                            <option>Medium</option>
+                                            <option>Hard</option>
+                                        </select>
+                                    </div>
+                                    <div class="study-field">
+                                        <label for="studySubjectSelect">Subject</label>
+                                        <select id="studySubjectSelect">
+                                            <option>Math</option>
+                                            <option>Science</option>
+                                            <option>History</option>
+                                            <option>Computer Science</option>
+                                            <option>English</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="study-field">
+                                        <label for="studyQuestionTypeSelect">Question Type</label>
+                                        <select id="studyQuestionTypeSelect">
+                                            <option>Multiple Choice</option>
+                                            <option>Short Answer</option>
+                                            <option>Essay</option>
+                                            <option>True/False</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" class="button-primary" id="studyGenerateQuestionButton">Generate Question</button>
+                                <div class="study-status" id="studyTestingStatus"></div>
+                                <div id="studyQuestionArea" style="display:none;">
+                                    <div class="study-question-box" id="studyQuestionDisplay"></div>
+                                    <div class="study-actions">
+                                        <button type="button" class="button-secondary" id="studyHintButton">Hint</button>
+                                        <button type="button" class="button-secondary" id="studyNextQuestionButton">Next Question</button>
+                                    </div>
+                                    <div class="study-feedback-box" id="studyHintDisplay" style="display:none;"></div>
+                                    <div class="study-field" style="margin-top:14px;">
+                                        <label for="studyAnswerInput">Your Answer</label>
+                                        <textarea id="studyAnswerInput" class="study-answer" rows="4" placeholder="Type your answer here..."></textarea>
+                                    </div>
+                                    <button type="button" class="button-primary" id="studySubmitAnswerButton" style="margin-top:12px;">Submit Answer</button>
+                                    <div class="study-feedback-box" id="studyFeedbackDisplay" style="display:none;"></div>
+                                </div>
+                            </section>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="reminderModalBackdrop">
+        <div class="modal-card">
+            <h3>Schedule a reminder</h3>
+            <div class="modal-field">
+                <label for="reminderTextInput">What do you want to be reminded about?</label>
+                <textarea id="reminderTextInput" rows="2" placeholder="Take out the trash, call Mom, feed the dog..."></textarea>
+            </div>
+            <div class="modal-field">
+                <label for="reminderDateInput">Date</label>
+                <input id="reminderDateInput" type="date">
+            </div>
+            <div class="modal-field">
+                <label for="reminderTimeInput">Time</label>
+                <input id="reminderTimeInput" type="time">
+            </div>
+            <div class="modal-field">
+                <label for="reminderAlertTypeSelect">Alert style</label>
+                <select id="reminderAlertTypeSelect">
+                    <option value="both">Popup + sound (recommended)</option>
+                    <option value="popup">Popup only</option>
+                    <option value="sound">Sound only</option>
+                </select>
+            </div>
+            <div class="modal-controls">
+                <button type="button" class="button-secondary" id="cancelReminderButton">Cancel</button>
+                <button type="button" class="button-primary" id="saveReminderButton">Save Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reminder-alert-backdrop" id="reminderAlertBackdrop">
+        <div class="reminder-alert-card">
+            <div class="reminder-alert-icon">⏰</div>
+            <h2>Reminder!</h2>
+            <p class="reminder-alert-text" id="reminderAlertText"></p>
+            <p class="reminder-alert-time" id="reminderAlertTime"></p>
+            <div class="reminder-alert-actions">
+                <button type="button" class="button-secondary" id="reminderSnoozeButton">Snooze 5 min</button>
+                <button type="button" class="button-danger" id="reminderDismissButton">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reminder-sound-bar" id="reminderSoundBar">
+        <strong id="reminderSoundBarText"></strong>
+        <button type="button" class="button-secondary" id="reminderSoundBarSnooze">Snooze 5 min</button>
+        <button type="button" class="button-danger" id="reminderSoundBarDismiss">Stop</button>
+    </div>
+
+    <div class="modal-backdrop" id="themeModalBackdrop">
+        <div class="modal-card">
+            <h3>Choose a theme</h3>
+            <p style="margin: 0 0 18px; color:#64748b; font-size:0.95rem;">Pick a color for your planner.</p>
+            <div class="theme-grid" id="themeGrid">
+                <button type="button" class="theme-option" data-theme="red">
+                    <span class="theme-swatch theme-swatch-red"></span>
+                    <span class="theme-option-label">Red</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="orange">
+                    <span class="theme-swatch theme-swatch-orange"></span>
+                    <span class="theme-option-label">Orange</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="yellow">
+                    <span class="theme-swatch theme-swatch-yellow"></span>
+                    <span class="theme-option-label">Yellow</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="green">
+                    <span class="theme-swatch theme-swatch-green"></span>
+                    <span class="theme-option-label">Green</span>
+                </button>
+                <button type="button" class="theme-option selected" data-theme="blue">
+                    <span class="theme-swatch theme-swatch-blue"></span>
+                    <span class="theme-option-label">Blue</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="purple">
+                    <span class="theme-swatch theme-swatch-purple"></span>
+                    <span class="theme-option-label">Purple</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="pink">
+                    <span class="theme-swatch theme-swatch-pink"></span>
+                    <span class="theme-option-label">Pink</span>
+                </button>
+                <button type="button" class="theme-option" data-theme="black">
+                    <span class="theme-swatch theme-swatch-black"></span>
+                    <span class="theme-option-label">Black</span>
+                </button>
+            </div>
+            <div class="modal-controls">
+                <button type="button" class="button-secondary" id="closeThemeModalButton">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal-card">
+            <h3>Add item to <span id="modalTabLabel">School</span></h3>
+            <div class="modal-field">
+                <label for="taskTypeSelect">Type</label>
+                <select id="taskTypeSelect">
+                    <option value="Task">Task</option>
+                    <option value="Activity">Activity</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label for="taskNameInput">Name</label>
+                <textarea id="taskNameInput" rows="2" placeholder="Enter a description"></textarea>
+            </div>
+            <div class="modal-field">
+                <label for="dueDateInput">Date</label>
+                <input id="dueDateInput" type="date">
+            </div>
+            <div class="modal-controls">
+                <button type="button" class="button-secondary" id="cancelButton">Cancel</button>
+                <button type="button" class="button-primary" id="saveTaskButton">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-modal-backdrop" id="dayModalBackdrop">
+        <div class="day-modal-card" style="position: relative;">
+            <button class="day-modal-close" id="dayModalClose">✕</button>
+            <h2 id="dayModalDate"></h2>
+            <div id="dayModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Assistant UI -->
+    <div class="assistant-button" id="assistantButton">AI</div>
+    <div class="assistant-panel" id="assistantPanel">
+        <div class="assistant-header">
+            <div>Planner Assistant</div>
+            <div class="controls">
+                <label class="assistant-create-toggle"><input type="checkbox" id="assistantCreateToggle"> Allow assistant to create items from natural language</label>
+                <button id="assistantFullscreen" class="fullscreen-toggle">⤢</button>
+            </div>
+        </div>
+        <div class="assistant-messages" id="assistantMessages"></div>
+        <div class="assistant-input-row">
+            <input id="assistantInput" placeholder="Ask about your tasks...">
+            <button class="button-primary" id="assistantSend">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let activities = [];
+        let activeView = "Dashboard";
+        let activeTab = "School";
+        let calendarDate = new Date();
+        let selectedCalendarDate = new Date();
+        let showHolidays = true;
+        let activeTheme = 'blue';
+        const THEME_OPTIONS = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'black'];
+        let notesAutoSaveTimeout;
+        let currentNotePage = 1;
+        let totalNotePages = 1;
+        const allTabs = ["School", "Home"];
+        const STUDY_GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        const STUDY_GROQ_API_KEY = 'YOUR_API_KEY_HERE';
+        const STUDY_MODEL = 'llama-3.3-70b-versatile';
+        let studyChatHistory = [];
+        let studyMode = 'Learning';
+        let studyTotalQuestions = 0;
+        let studyCurrentQuestion = '';
+        let studyCurrentTopic = '';
+        let studyCurrentSubject = '';
+        let studyCurrentDifficulty = '';
+        let studyCurrentType = '';
+        let reminders = [];
+        let activeReminderAlert = null;
+        let reminderSoundInterval = null;
+        let reminderCheckInterval = null;
+        const REMINDERS_STORAGE_KEY = 'plannerReminders';
+
+        function getStorageKey(tabName) {
+            return `plannerTasks_${tabName}`;
+        }
+
+        function loadShowHolidaysSetting() {
+            try {
+                const saved = localStorage.getItem('plannerShowHolidays');
+                showHolidays = saved !== 'false';
+            } catch (error) {
+                showHolidays = true;
+            }
+        }
+
+        function saveShowHolidaysSetting() {
+            try {
+                localStorage.setItem('plannerShowHolidays', showHolidays ? 'true' : 'false');
+            } catch (error) {
+                console.warn('Unable to save holiday setting:', error);
+            }
+        }
+
+        function loadThemeSetting() {
+            try {
+                const saved = localStorage.getItem('plannerTheme');
+                activeTheme = THEME_OPTIONS.includes(saved) ? saved : 'blue';
+            } catch (error) {
+                activeTheme = 'blue';
+            }
+        }
+
+        function saveThemeSetting() {
+            try {
+                localStorage.setItem('plannerTheme', activeTheme);
+            } catch (error) {
+                console.warn('Unable to save theme setting:', error);
+            }
+        }
+
+        function applyTheme(themeName) {
+            activeTheme = THEME_OPTIONS.includes(themeName) ? themeName : 'blue';
+            document.body.className = `theme-${activeTheme}`;
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.toggle('selected', option.dataset.theme === activeTheme);
+            });
+            saveThemeSetting();
+        }
+
+        function openThemeModal() {
+            document.getElementById('themeModalBackdrop').classList.add('active');
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.toggle('selected', option.dataset.theme === activeTheme);
+            });
+        }
+
+        function closeThemeModal() {
+            document.getElementById('themeModalBackdrop').classList.remove('active');
+        }
+
+        function getNthWeekdayOfMonth(year, month, weekday, occurrence) {
+            const first = new Date(year, month, 1);
+            const offset = (7 + weekday - first.getDay()) % 7;
+            const day = 1 + offset + (occurrence - 1) * 7;
+            return new Date(year, month, day);
+        }
+
+        function getLastWeekdayOfMonth(year, month, weekday) {
+            const last = new Date(year, month + 1, 0);
+            const diff = (last.getDay() - weekday + 7) % 7;
+            return new Date(year, month, last.getDate() - diff);
+        }
+
+        function getEasterDate(year) {
+            const a = year % 19;
+            const b = Math.floor(year / 100);
+            const c = year % 100;
+            const d = Math.floor(b / 4);
+            const e = b % 4;
+            const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3);
+            const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4);
+            const k = c % 4;
+            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+            const day = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(year, month, day);
+        }
+
+        function getMajorHolidays(year) {
+            return [
+                { name: "New Year's Day", date: new Date(year, 0, 1) },
+                { name: "Martin Luther King Jr. Day", date: getNthWeekdayOfMonth(year, 0, 1, 3) },
+                { name: "Valentine's Day", date: new Date(year, 1, 14) },
+                { name: "Presidents' Day", date: getNthWeekdayOfMonth(year, 1, 1, 3) },
+                { name: "St. Patrick's Day", date: new Date(year, 2, 17) },
+                { name: "Easter", date: getEasterDate(year) },
+                { name: "Mother's Day", date: getNthWeekdayOfMonth(year, 4, 0, 2) },
+                { name: "Memorial Day", date: getLastWeekdayOfMonth(year, 4, 1) },
+                { name: "Juneteenth", date: new Date(year, 5, 19) },
+                { name: "Father's Day", date: getNthWeekdayOfMonth(year, 5, 0, 3) },
+                { name: "Independence Day", date: new Date(year, 6, 4) },
+                { name: "Labor Day", date: getNthWeekdayOfMonth(year, 8, 1, 1) },
+                { name: "Halloween", date: new Date(year, 9, 31) },
+                { name: "Veterans Day", date: new Date(year, 10, 11) },
+                { name: "Thanksgiving", date: getNthWeekdayOfMonth(year, 10, 4, 4) },
+                { name: "Christmas Eve", date: new Date(year, 11, 24) },
+                { name: "Christmas", date: new Date(year, 11, 25) },
+                { name: "New Year's Eve", date: new Date(year, 11, 31) }
+            ];
+        }
+
+        function getHolidaysOnDate(date) {
+            if (!showHolidays) return [];
+            return getMajorHolidays(date.getFullYear()).filter(holiday => isSameDate(holiday.date, date));
+        }
+
+        function updateCalendarMonthLabel() {
+            const monthLabel = document.getElementById('calendarMonthLabel');
+            const monthTitle = document.getElementById('calendarMonthTitle');
+            const labelText = calendarDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            if (monthLabel) monthLabel.textContent = labelText;
+            if (monthTitle) monthTitle.textContent = labelText;
+        }
+
+        function loadReminders() {
+            try {
+                const saved = localStorage.getItem(REMINDERS_STORAGE_KEY);
+                reminders = saved ? JSON.parse(saved) : [];
+            } catch (error) {
+                console.warn('Unable to load reminders:', error);
+                reminders = [];
+            }
+        }
+
+        function saveReminders() {
+            try {
+                localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(reminders));
+            } catch (error) {
+                console.warn('Unable to save reminders:', error);
+            }
+        }
+
+        function createReminderId() {
+            return `reminder_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        }
+
+        function getReminderDateTime(reminder) {
+            const [year, month, day] = reminder.date.split('-').map(Number);
+            const [hours, minutes] = reminder.time.split(':').map(Number);
+            return new Date(year, month - 1, day, hours, minutes, 0, 0);
+        }
+
+        function formatReminderDateTime(reminder) {
+            return getReminderDateTime(reminder).toLocaleString(undefined, {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        function getAlertTypeLabel(alertType) {
+            if (alertType === 'popup') return 'Popup only';
+            if (alertType === 'sound') return 'Sound only';
+            return 'Popup + sound';
+        }
+
+        function getUpcomingReminders() {
+            const now = Date.now();
+            return reminders
+                .filter(reminder => !reminder.fired && getReminderDateTime(reminder).getTime() >= now)
+                .sort((a, b) => getReminderDateTime(a) - getReminderDateTime(b));
+        }
+
+        function updateHomeReminderSummary() {
+            const summary = document.getElementById('homeReminderSummary');
+            if (!summary) return;
+            const upcoming = getUpcomingReminders();
+            if (upcoming.length === 0) {
+                summary.textContent = 'No upcoming reminders.';
+                return;
+            }
+            const next = upcoming[0];
+            summary.textContent = `${upcoming.length} upcoming. Next: ${next.text} (${formatReminderDateTime(next)})`;
+        }
+
+        function displayReminders() {
+            const container = document.getElementById('reminderList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const sorted = [...reminders].sort((a, b) => getReminderDateTime(a) - getReminderDateTime(b));
+            if (sorted.length === 0) {
+                const empty = document.createElement('p');
+                empty.textContent = 'No reminders yet. Click Add Reminder to schedule one.';
+                empty.style.color = '#64748b';
+                empty.style.margin = '0';
+                container.appendChild(empty);
+                updateHomeReminderSummary();
+                return;
+            }
+
+            sorted.forEach(reminder => {
+                const row = document.createElement('div');
+                row.className = 'reminder-row' + (reminder.fired ? ' fired' : '');
+
+                const details = document.createElement('div');
+                details.className = 'reminder-details';
+                details.innerHTML = `
+                    <strong>${reminder.text}</strong>
+                    <div class="reminder-meta">
+                        <span>${formatReminderDateTime(reminder)}</span>
+                        <span>${getAlertTypeLabel(reminder.alertType)}</span>
+                        <span>${reminder.fired ? 'Completed' : 'Scheduled'}</span>
+                    </div>
+                `;
+
+                const actions = document.createElement('div');
+                actions.className = 'reminder-actions';
+
+                if (!reminder.fired) {
+                    const testButton = document.createElement('button');
+                    testButton.className = 'button-secondary';
+                    testButton.textContent = 'Test alert';
+                    testButton.onclick = function () {
+                        triggerReminder(reminder, true);
+                    };
+                    actions.appendChild(testButton);
+                }
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'button-secondary';
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function () {
+                    reminders = reminders.filter(item => item.id !== reminder.id);
+                    saveReminders();
+                    displayReminders();
+                    updateHomeReminderSummary();
+                };
+                actions.appendChild(deleteButton);
+
+                row.appendChild(details);
+                row.appendChild(actions);
+                container.appendChild(row);
+            });
+
+            updateHomeReminderSummary();
+        }
+
+        async function ensureReminderPermissions() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'default') {
+                try {
+                    await Notification.requestPermission();
+                } catch (error) {
+                    console.warn('Notification permission request failed:', error);
+                }
+            }
+        }
+
+        function playReminderSound() {
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                const context = new AudioContextClass();
+                const tones = [
+                    { frequency: 880, start: 0, duration: 0.22 },
+                    { frequency: 1100, start: 0.28, duration: 0.22 },
+                    { frequency: 880, start: 0.56, duration: 0.34 }
+                ];
+
+                tones.forEach(tone => {
+                    const oscillator = context.createOscillator();
+                    const gain = context.createGain();
+                    oscillator.connect(gain);
+                    gain.connect(context.destination);
+                    oscillator.type = 'square';
+                    oscillator.frequency.value = tone.frequency;
+                    gain.gain.setValueAtTime(0.0001, context.currentTime + tone.start);
+                    gain.gain.exponentialRampToValueAtTime(0.35, context.currentTime + tone.start + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + tone.start + tone.duration);
+                    oscillator.start(context.currentTime + tone.start);
+                    oscillator.stop(context.currentTime + tone.start + tone.duration + 0.02);
+                });
+            } catch (error) {
+                console.warn('Unable to play reminder sound:', error);
+            }
+        }
+
+        function stopReminderSoundLoop() {
+            if (reminderSoundInterval) {
+                clearInterval(reminderSoundInterval);
+                reminderSoundInterval = null;
+            }
+        }
+
+        function showReminderAlert(reminder) {
+            activeReminderAlert = reminder;
+            document.getElementById('reminderAlertText').textContent = reminder.text;
+            document.getElementById('reminderAlertTime').textContent = formatReminderDateTime(reminder);
+            document.getElementById('reminderAlertBackdrop').classList.add('active');
+        }
+
+        function hideReminderAlert() {
+            document.getElementById('reminderAlertBackdrop').classList.remove('active');
+            document.getElementById('reminderSoundBar').classList.remove('active');
+            activeReminderAlert = null;
+            stopReminderSoundLoop();
+        }
+
+        function showReminderSoundBar(reminder) {
+            activeReminderAlert = reminder;
+            document.getElementById('reminderSoundBarText').textContent = `Reminder: ${reminder.text}`;
+            document.getElementById('reminderSoundBar').classList.add('active');
+        }
+
+        function sendBrowserNotification(reminder) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            try {
+                new Notification('Planner Reminder', {
+                    body: reminder.text,
+                    tag: reminder.id,
+                    requireInteraction: true
+                });
+            } catch (error) {
+                console.warn('Unable to show browser notification:', error);
+            }
+        }
+
+        function triggerReminder(reminder, isTest = false) {
+            const usesPopup = reminder.alertType === 'popup' || reminder.alertType === 'both';
+            const usesSound = reminder.alertType === 'sound' || reminder.alertType === 'both';
+
+            if (!isTest) {
+                reminder.fired = true;
+                saveReminders();
+                displayReminders();
+            }
+
+            if (usesPopup) {
+                showReminderAlert(reminder);
+            } else if (usesSound) {
+                showReminderSoundBar(reminder);
+            }
+
+            if (usesSound) {
+                playReminderSound();
+                stopReminderSoundLoop();
+                reminderSoundInterval = setInterval(playReminderSound, 3000);
+            }
+
+            sendBrowserNotification(reminder);
+        }
+
+        function checkReminders() {
+            const now = Date.now();
+            reminders.forEach(reminder => {
+                if (reminder.fired) return;
+                if (getReminderDateTime(reminder).getTime() <= now) {
+                    triggerReminder(reminder);
+                }
+            });
+        }
+
+        function startReminderScheduler() {
+            if (reminderCheckInterval) clearInterval(reminderCheckInterval);
+            checkReminders();
+            reminderCheckInterval = setInterval(checkReminders, 15000);
+        }
+
+        function openReminderModal() {
+            ensureReminderPermissions();
+            document.getElementById('reminderModalBackdrop').classList.add('active');
+            document.getElementById('reminderTextInput').value = '';
+            const now = new Date();
+            document.getElementById('reminderDateInput').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            document.getElementById('reminderTimeInput').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('reminderAlertTypeSelect').value = 'both';
+            document.getElementById('reminderTextInput').focus();
+        }
+
+        function closeReminderModal() {
+            document.getElementById('reminderModalBackdrop').classList.remove('active');
+        }
+
+        function handleSaveReminder() {
+            const text = document.getElementById('reminderTextInput').value.trim();
+            const date = document.getElementById('reminderDateInput').value;
+            const time = document.getElementById('reminderTimeInput').value;
+            const alertType = document.getElementById('reminderAlertTypeSelect').value;
+
+            if (!text) {
+                alert('Please enter what you want to be reminded about.');
+                return;
+            }
+            if (!date || !time) {
+                alert('Please choose both a date and a time.');
+                return;
+            }
+
+            const reminder = {
+                id: createReminderId(),
+                text,
+                date,
+                time,
+                alertType,
+                fired: false,
+                createdAt: Date.now()
+            };
+
+            if (getReminderDateTime(reminder).getTime() <= Date.now()) {
+                alert('Please choose a date and time in the future.');
+                return;
+            }
+
+            reminders.push(reminder);
+            saveReminders();
+            displayReminders();
+            closeReminderModal();
+            ensureReminderPermissions();
+        }
+
+        function snoozeActiveReminder() {
+            if (!activeReminderAlert) return;
+            const reminder = reminders.find(item => item.id === activeReminderAlert.id);
+            if (!reminder) {
+                hideReminderAlert();
+                return;
+            }
+
+            const snoozedUntil = new Date(Date.now() + 5 * 60 * 1000);
+            reminder.date = `${snoozedUntil.getFullYear()}-${String(snoozedUntil.getMonth() + 1).padStart(2, '0')}-${String(snoozedUntil.getDate()).padStart(2, '0')}`;
+            reminder.time = `${String(snoozedUntil.getHours()).padStart(2, '0')}:${String(snoozedUntil.getMinutes()).padStart(2, '0')}`;
+            reminder.fired = false;
+            saveReminders();
+            displayReminders();
+            hideReminderAlert();
+        }
+
+        function dismissActiveReminder() {
+            hideReminderAlert();
+        }
+
+        function getActivityStorageKey(tabName) {
+            return `plannerActivities_${tabName}`;
+        }
+
+        function loadActivities() {
+            try {
+                const saved = localStorage.getItem(getActivityStorageKey(activeTab));
+                activities = saved ? JSON.parse(saved) : [];
+            } catch (error) {
+                console.warn("Unable to load activities from storage:", error);
+                activities = [];
+            }
+        }
+
+        function saveActivities() {
+            try {
+                localStorage.setItem(getActivityStorageKey(activeTab), JSON.stringify(activities));
+            } catch (error) {
+                console.warn("Unable to save activities to storage:", error);
+            }
+        }
+
+        function loadAllActivities() {
+            return allTabs.flatMap(tab => {
+                try {
+                    const saved = localStorage.getItem(getActivityStorageKey(tab));
+                    const parsed = saved ? JSON.parse(saved) : [];
+                    return parsed.map(act => ({ ...act, tab }));
+                } catch (error) {
+                    return [];
+                }
+            });
+        }
+
+        function getNotesStorageKey() {
+            return `plannerNotes_pages_${activeTab}`;
+        }
+
+        function loadNotes() {
+            try {
+                const allPages = localStorage.getItem(getNotesStorageKey());
+                const pages = allPages ? JSON.parse(allPages) : [''];
+                totalNotePages = pages.length;
+                if (currentNotePage > totalNotePages) currentNotePage = totalNotePages;
+                if (currentNotePage < 1) currentNotePage = 1;
+                return pages[currentNotePage - 1] || '';
+            } catch (error) {
+                console.warn("Unable to load notes from storage:", error);
+                return '';
+            }
+        }
+
+        function saveNotes(content) {
+            try {
+                const allPages = localStorage.getItem(getNotesStorageKey());
+                const pages = allPages ? JSON.parse(allPages) : [''];
+                pages[currentNotePage - 1] = content;
+                localStorage.setItem(getNotesStorageKey(), JSON.stringify(pages));
+                totalNotePages = pages.length;
+            } catch (error) {
+                console.warn("Unable to save notes to storage:", error);
+            }
+        }
+
+        function createNewNotePage() {
+            try {
+                const allPages = localStorage.getItem(getNotesStorageKey());
+                const pages = allPages ? JSON.parse(allPages) : [''];
+                pages.push('');
+                localStorage.setItem(getNotesStorageKey(), JSON.stringify(pages));
+                totalNotePages = pages.length;
+                currentNotePage = totalNotePages;
+                loadAndDisplayNotes();
+            } catch (error) {
+                console.warn("Failed to create new note page", error);
+            }
+        }
+
+        function goToNotePage(pageNum) {
+            const allPages = localStorage.getItem(getNotesStorageKey());
+            const pages = allPages ? JSON.parse(allPages) : [''];
+            if (pageNum < 1 || pageNum > pages.length) return;
+            currentNotePage = pageNum;
+            loadAndDisplayNotes();
+        }
+
+        function loadAndDisplayNotes() {
+            const notesEditor = document.getElementById("notesEditor");
+            notesEditor.value = loadNotes();
+            updateNotePageIndicator();
+        }
+
+        function updateNotePageIndicator() {
+            const indicator = document.getElementById("notePageIndicator");
+            if (indicator) indicator.textContent = `Page ${currentNotePage} of ${totalNotePages}`;
+            const prevBtn = document.getElementById("prevNotePageButton");
+            const nextBtn = document.getElementById("nextNotePageButton");
+            if (prevBtn) prevBtn.style.opacity = currentNotePage <= 1 ? '0.5' : '1';
+            if (nextBtn) nextBtn.style.opacity = currentNotePage >= totalNotePages ? '0.5' : '1';
+        }
+
+        function openDayModal(date) {
+            const allActivities = loadAllActivities();
+            const tasksOnDate = allActivities.filter(act => {
+                if (!act.dueDate) return false;
+                const due = parseLocalDate(act.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return isSameDate(due, date);
+            });
+            const holidaysOnDate = getHolidaysOnDate(date);
+
+            const dateStr = date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("dayModalDate").textContent = `Schedule for ${dateStr}`;
+
+            const content = document.getElementById("dayModalContent");
+            content.innerHTML = "";
+
+            if (holidaysOnDate.length > 0) {
+                const holidayHeading = document.createElement("h3");
+                holidayHeading.textContent = "Holidays";
+                holidayHeading.style.margin = "0 0 10px";
+                content.appendChild(holidayHeading);
+
+                holidaysOnDate.forEach(holiday => {
+                    const row = document.createElement("div");
+                    row.className = "calendar-task-row holiday-row";
+                    row.innerHTML = `<strong>${holiday.name}</strong><span class="calendar-holiday-label">Holiday</span>`;
+                    content.appendChild(row);
+                });
+            }
+
+            if (tasksOnDate.length > 0) {
+                const activityHeading = document.createElement("h3");
+                activityHeading.textContent = "Activities";
+                activityHeading.style.margin = holidaysOnDate.length > 0 ? "18px 0 10px" : "0 0 10px";
+                content.appendChild(activityHeading);
+
+                tasksOnDate.forEach(task => {
+                    const row = document.createElement("div");
+                    row.className = "calendar-task-row";
+                    row.innerHTML = `<strong>${task.text}</strong><span class="calendar-task-label">${task.tab}</span>`;
+                    content.appendChild(row);
+                });
+            }
+
+            if (tasksOnDate.length === 0 && holidaysOnDate.length === 0) {
+                const empty = document.createElement("p");
+                empty.textContent = "Nothing is scheduled for this day.";
+                empty.style.color = "#64748b";
+                content.appendChild(empty);
+            }
+
+            document.getElementById("dayModalBackdrop").classList.add("active");
+        }
+
+        function closeDayModal() {
+            document.getElementById("dayModalBackdrop").classList.remove("active");
+        }
+
+        function loadTasks() {
+            try {
+                const savedTasks = localStorage.getItem(getStorageKey(activeTab));
+                tasks = savedTasks ? JSON.parse(savedTasks) : [];
+            } catch (error) {
+                console.warn("Unable to load tasks from storage:", error);
+                tasks = [];
+            }
+        }
+
+        function saveTasks() {
+            try {
+                localStorage.setItem(getStorageKey(activeTab), JSON.stringify(tasks));
+            } catch (error) {
+                console.warn("Unable to save tasks to storage:", error);
+            }
+        }
+
+        function displayActivities() {
+            const container = document.getElementById('activityList');
+            container.innerHTML = '';
+
+            const heading = document.createElement('h3');
+            heading.textContent = 'Activities';
+            heading.style.margin = '0 0 12px 0';
+            heading.style.color = '#475569';
+            container.appendChild(heading);
+
+            if (!activities || activities.length === 0) {
+                const empty = document.createElement('p');
+                empty.textContent = 'No activities yet.';
+                empty.style.color = '#64748b';
+                container.appendChild(empty);
+                return;
+            }
+
+            activities.forEach((act, idx) => {
+                const row = document.createElement('div');
+                row.className = 'calendar-task-row';
+                row.style.marginBottom = '10px';
+
+                const left = document.createElement('div');
+                left.innerHTML = `<strong>${act.text}</strong>`;
+
+                const right = document.createElement('div');
+                right.style.display = 'flex';
+                right.style.gap = '8px';
+
+                const dateLabel = document.createElement('span');
+                dateLabel.className = 'calendar-task-label';
+                dateLabel.textContent = act.dueDate ? act.dueDate : 'No date';
+
+                const del = document.createElement('button');
+                del.textContent = 'Delete';
+                del.onclick = function () {
+                    activities.splice(idx, 1);
+                    saveActivities();
+                    displayActivities();
+                };
+
+                right.appendChild(dateLabel);
+                right.appendChild(del);
+                row.appendChild(left);
+                row.appendChild(right);
+                container.appendChild(row);
+            });
+        }
+
+        function loadAllTasks() {
+            return allTabs.flatMap(tab => {
+                try {
+                    const saved = localStorage.getItem(getStorageKey(tab));
+                    const parsed = saved ? JSON.parse(saved) : [];
+                    return parsed.map(task => ({ ...task, tab }));
+                } catch (error) {
+                    return [];
+                }
+            });
+        }
+
+        function parseLocalDate(dateString) {
+            if (!dateString) return null;
+            const [year, month, day] = dateString.split("-").map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        function formatDueDate(dateString) {
+            if (!dateString) return "No due date";
+            const date = parseLocalDate(dateString);
+            return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function updateDashboard() {
+            const allTasks = loadAllTasks().filter(task => !task.completed);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const endOfWeek = new Date(today);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+
+            const dueToday = allTasks.filter(task => {
+                if (!task.dueDate) return false;
+                const due = parseLocalDate(task.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due.getTime() === today.getTime();
+            }).length;
+
+            const dueThisWeek = allTasks.filter(task => {
+                if (!task.dueDate) return false;
+                const due = parseLocalDate(task.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due.getTime() >= today.getTime() && due.getTime() <= endOfWeek.getTime();
+            }).length;
+
+            const overdue = allTasks.filter(task => {
+                if (!task.dueDate) return false;
+                const due = parseLocalDate(task.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return due.getTime() < today.getTime();
+            }).length;
+
+            document.getElementById("countToday").textContent = dueToday;
+            document.getElementById("countWeek").textContent = dueThisWeek;
+            document.getElementById("countOverdue").textContent = overdue;
+            updateHomeReminderSummary();
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementById("taskList");
+            // ensure correct visibility
+            document.getElementById('activityList').style.display = 'none';
+            taskList.style.display = 'block';
+            taskList.innerHTML = "";
+
+            if (tasks.length === 0) {
+                const emptyState = document.createElement("p");
+                emptyState.textContent = "No tasks yet. Click Add Task to create one.";
+                emptyState.style.color = "#64748b";
+                emptyState.style.margin = "0";
+                taskList.appendChild(emptyState);
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement("li");
+                li.className = "task-item";
+
+                const details = document.createElement("div");
+                details.className = "task-details";
+
+                const title = document.createElement("p");
+                title.className = "task-title" + (task.completed ? " completed" : "");
+                title.textContent = task.text;
+
+                const meta = document.createElement("p");
+                meta.className = "task-meta";
+                meta.innerHTML = `<span>${task.completed ? 'Completed' : 'Open'}</span><span>Due: ${formatDueDate(task.dueDate)}</span>`;
+
+                details.appendChild(title);
+                details.appendChild(meta);
+
+                const actions = document.createElement("div");
+                actions.className = "task-actions";
+
+                const toggleButton = document.createElement("button");
+                toggleButton.textContent = task.completed ? "Mark Open" : "Mark Done";
+                toggleButton.onclick = function () {
+                    tasks[index].completed = !tasks[index].completed;
+                    saveTasks();
+                    displayTasks();
+                };
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = function () {
+                    tasks.splice(index, 1);
+                    saveTasks();
+                    displayTasks();
+                };
+
+                actions.appendChild(toggleButton);
+                actions.appendChild(deleteButton);
+                li.appendChild(details);
+                li.appendChild(actions);
+                taskList.appendChild(li);
+            });
+        }
+
+        function openModal() {
+            document.getElementById("modalBackdrop").classList.add("active");
+            document.getElementById("modalTabLabel").textContent = activeTab;
+            document.getElementById("taskNameInput").value = "";
+            document.getElementById("dueDateInput").value = "";
+            const sel = document.getElementById('taskTypeSelect');
+            if (sel) sel.value = 'Task';
+            // ensure activities/tasks are current
+            loadTasks();
+            loadActivities();
+            document.getElementById("taskNameInput").focus();
+        }
+
+        function closeModal() {
+            document.getElementById("modalBackdrop").classList.remove("active");
+        }
+
+        function handleSaveTask() {
+            const type = document.getElementById('taskTypeSelect').value;
+            const text = document.getElementById("taskNameInput").value.trim();
+            const dueDate = document.getElementById("dueDateInput").value;
+
+            if (text === "") {
+                alert("Please enter a name.");
+                return;
+            }
+
+            if (type === 'Activity') {
+                activities.push({ text, dueDate });
+                saveActivities();
+            } else {
+                tasks.push({ text: text, dueDate, completed: false });
+                saveTasks();
+            }
+
+            displayTasks();
+            closeModal();
+        }
+
+        function updateActiveTabLabel() {
+            const label = (activeView === 'Activities') ? `${activeTab} Activities` : `${activeTab} Tasks`;
+            document.getElementById("activeTabLabel").textContent = label;
+        }
+
+        function updateTabView() {
+            const mapView = activeView === 'Activities' ? 'Tasks' : activeView;
+            document.querySelectorAll(".tab-view").forEach(view => {
+                view.classList.toggle("active", view.dataset.view === mapView);
+            });
+        }
+
+        function updateModalButton() {
+            const button = document.getElementById("openModalButton");
+            button.style.display = (activeView === 'Tasks' || activeView === 'Activities') ? "inline-flex" : "none";
+            const buttonText = (activeView === 'Activities') ? 'Add Activity' : 'Add Task';
+            button.textContent = buttonText;
+        }
+
+        function updateSchoolOnlyTabs() {
+            document.querySelectorAll('.school-only').forEach(button => {
+                button.style.display = activeTab === 'School' ? 'inline-flex' : 'none';
+            });
+            document.querySelectorAll('.home-only').forEach(button => {
+                button.style.display = activeTab === 'Home' ? 'inline-flex' : 'none';
+            });
+            const homeQuick = document.getElementById('homeReminderQuickAccess');
+            if (homeQuick) homeQuick.style.display = activeTab === 'Home' ? 'flex' : 'none';
+        }
+
+        function loadStudyState() {
+            try {
+                studyChatHistory = JSON.parse(localStorage.getItem('plannerStudy_chatHistory') || '[]');
+                studyTotalQuestions = Number(localStorage.getItem('plannerStudy_totalQuestions') || '0');
+            } catch (error) {
+                studyChatHistory = [];
+                studyTotalQuestions = 0;
+            }
+
+            if (studyChatHistory.length === 0) {
+                studyChatHistory.push({
+                    role: 'assistant',
+                    content: "Hello! I'm your AI tutor. What would you like to learn today?"
+                });
+            }
+        }
+
+        function saveStudyState() {
+            try {
+                localStorage.setItem('plannerStudy_chatHistory', JSON.stringify(studyChatHistory));
+                localStorage.setItem('plannerStudy_totalQuestions', String(studyTotalQuestions));
+            } catch (error) {
+                console.warn('Unable to save study state:', error);
+            }
+        }
+
+        function renderStudyProgress() {
+            const counter = document.getElementById('studyQuestionsAnswered');
+            if (counter) counter.textContent = studyTotalQuestions;
+        }
+
+        function renderStudyChat() {
+            const container = document.getElementById('studyChatMessages');
+            if (!container) return;
+            container.innerHTML = '';
+            studyChatHistory.forEach(message => {
+                const bubble = document.createElement('div');
+                bubble.className = `study-message ${message.role === 'user' ? 'user' : 'assistant'}`;
+                bubble.textContent = message.content;
+                container.appendChild(bubble);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function switchStudyMode(nextMode) {
+            studyMode = nextMode;
+            document.querySelectorAll('.study-mode-button').forEach(button => {
+                button.classList.toggle('active', button.dataset.studyMode === nextMode);
+            });
+            document.getElementById('studyLearningPanel').classList.toggle('active', nextMode === 'Learning');
+            document.getElementById('studyTestingPanel').classList.toggle('active', nextMode === 'Testing');
+        }
+
+        async function callStudyAI(messages, temperature = 0.7) {
+            if (!STUDY_GROQ_API_KEY) {
+                throw new Error('No Groq API key is configured for the study app.');
+            }
+
+            const response = await fetch(STUDY_GROQ_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${STUDY_GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: STUDY_MODEL,
+                    messages,
+                    temperature,
+                    max_tokens: 1200
+                })
+            });
+
+            if (!response.ok) {
+                let detail = '';
+                try { detail = await response.text(); } catch (error) { detail = 'No response body.'; }
+                throw new Error(`Groq API error ${response.status}: ${detail}`);
+            }
+
+            const data = await response.json();
+            return data.choices?.[0]?.message?.content || '';
+        }
+
+        async function sendStudyChat() {
+            const input = document.getElementById('studyChatInput');
+            const status = document.getElementById('studyLearningStatus');
+            const prompt = input.value.trim();
+            if (!prompt) return;
+
+            input.value = '';
+            studyChatHistory.push({ role: 'user', content: prompt });
+            renderStudyChat();
+            status.textContent = 'Thinking...';
+
+            try {
+                const answer = await callStudyAI([
+                    {
+                        role: 'system',
+                        content: 'You are an expert tutor. Explain concepts clearly, use examples, encourage curiosity, and answer follow-up questions.'
+                    },
+                    ...studyChatHistory
+                ]);
+                studyChatHistory.push({ role: 'assistant', content: answer });
+                saveStudyState();
+                renderStudyChat();
+                status.textContent = '';
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        function getStudyQuestionSettings() {
+            return {
+                topic: document.getElementById('studyTopicInput').value.trim(),
+                difficulty: document.getElementById('studyDifficultySelect').value,
+                subject: document.getElementById('studySubjectSelect').value,
+                type: document.getElementById('studyQuestionTypeSelect').value
+            };
+        }
+
+        function visibleStudyQuestion(rawQuestion) {
+            return rawQuestion
+                .split('CORRECT_ANSWER:')[0]
+                .split('MODEL_ANSWER:')[0]
+                .trim();
+        }
+
+        function showStudyQuestion() {
+            document.getElementById('studyQuestionArea').style.display = studyCurrentQuestion ? 'block' : 'none';
+            document.getElementById('studyQuestionDisplay').textContent = visibleStudyQuestion(studyCurrentQuestion);
+            document.getElementById('studyHintDisplay').style.display = 'none';
+            document.getElementById('studyHintDisplay').textContent = '';
+            document.getElementById('studyFeedbackDisplay').style.display = 'none';
+            document.getElementById('studyFeedbackDisplay').textContent = '';
+            document.getElementById('studyAnswerInput').value = '';
+            const placeholder = studyCurrentType === 'Multiple Choice' ? 'A, B, C, or D' : studyCurrentType === 'True/False' ? 'True or False' : 'Type your answer here...';
+            document.getElementById('studyAnswerInput').placeholder = placeholder;
+        }
+
+        function buildQuestionPrompt(settings, makeDifferent) {
+            return `Create ONE ${makeDifferent ? 'new ' : ''}question.
+
+Topic: ${settings.topic}
+Subject: ${settings.subject}
+Difficulty: ${settings.difficulty}
+Type: ${settings.type}
+
+Rules:
+
+If Multiple Choice:
+- Give exactly 4 options labelled A, B, C, D
+- Put the correct answer at the end like:
+CORRECT_ANSWER: A
+
+If True/False:
+- Put:
+CORRECT_ANSWER: True
+
+If Short Answer or Essay:
+- Put:
+MODEL_ANSWER: ...
+
+${makeDifferent ? 'Make it different from previous questions.' : ''}`;
+        }
+
+        async function generateStudyQuestion(makeDifferent = false) {
+            const status = document.getElementById('studyTestingStatus');
+            const settings = makeDifferent ? {
+                topic: studyCurrentTopic,
+                subject: studyCurrentSubject,
+                difficulty: studyCurrentDifficulty,
+                type: studyCurrentType
+            } : getStudyQuestionSettings();
+
+            if (!settings.topic) {
+                status.textContent = 'Please enter a topic first.';
+                return;
+            }
+
+            studyCurrentTopic = settings.topic;
+            studyCurrentSubject = settings.subject;
+            studyCurrentDifficulty = settings.difficulty;
+            studyCurrentType = settings.type;
+            status.textContent = 'Generating question...';
+
+            try {
+                studyCurrentQuestion = await callStudyAI([
+                    { role: 'user', content: buildQuestionPrompt(settings, makeDifferent) }
+                ]);
+                showStudyQuestion();
+                status.textContent = '';
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        async function showStudyHint() {
+            if (!studyCurrentQuestion) return;
+            const status = document.getElementById('studyTestingStatus');
+            const hintBox = document.getElementById('studyHintDisplay');
+            status.textContent = 'Getting hint...';
+
+            try {
+                const hint = await callStudyAI([
+                    {
+                        role: 'user',
+                        content: `Here is the question:\n${studyCurrentQuestion}\nGive ONE small hint. Do NOT reveal the answer.`
+                    }
+                ]);
+                hintBox.textContent = hint;
+                hintBox.style.display = 'block';
+                status.textContent = '';
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        async function submitStudyAnswer() {
+            if (!studyCurrentQuestion) return;
+            const answer = document.getElementById('studyAnswerInput').value.trim();
+            const status = document.getElementById('studyTestingStatus');
+            const feedbackBox = document.getElementById('studyFeedbackDisplay');
+
+            if (!answer) {
+                status.textContent = 'Please enter an answer first.';
+                return;
+            }
+
+            status.textContent = 'Grading answer...';
+            try {
+                const feedback = await callStudyAI([
+                    {
+                        role: 'user',
+                        content: `Grade this student's answer.
+
+Question:
+${studyCurrentQuestion}
+
+Student Answer:
+${answer}
+
+Return:
+
+Score: X/10
+
+Correctness:
+...
+
+Explanation:
+...
+
+What To Learn:
+...
+
+But don't go super strict mode.`
+                    }
+                ]);
+
+                studyTotalQuestions += 1;
+                saveStudyState();
+                renderStudyProgress();
+                feedbackBox.textContent = feedback;
+                feedbackBox.style.display = 'block';
+                status.textContent = 'Answer submitted.';
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        function initializeStudyApp() {
+            loadStudyState();
+            renderStudyProgress();
+            renderStudyChat();
+            switchStudyMode(studyMode);
+
+            document.querySelectorAll('.study-mode-button').forEach(button => {
+                button.addEventListener('click', () => switchStudyMode(button.dataset.studyMode));
+            });
+            document.getElementById('studyClearChatButton').addEventListener('click', () => {
+                studyChatHistory = [{
+                    role: 'assistant',
+                    content: "Hello! I'm your AI tutor. What would you like to learn today?"
+                }];
+                saveStudyState();
+                renderStudyChat();
+            });
+            document.getElementById('studyChatSend').addEventListener('click', sendStudyChat);
+            document.getElementById('studyChatInput').addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendStudyChat();
+                }
+            });
+            document.getElementById('studyGenerateQuestionButton').addEventListener('click', () => generateStudyQuestion(false));
+            document.getElementById('studyHintButton').addEventListener('click', showStudyHint);
+            document.getElementById('studyNextQuestionButton').addEventListener('click', () => generateStudyQuestion(true));
+            document.getElementById('studySubmitAnswerButton').addEventListener('click', submitStudyAnswer);
+        }
+
+        function switchMajor(majorName) {
+            // set active major tab (School/Home)
+            activeTab = majorName;
+            if (activeTab !== 'School' && activeView === 'Study') {
+                activeView = 'Dashboard';
+            }
+            if (activeTab !== 'Home' && activeView === 'Reminders') {
+                activeView = 'Dashboard';
+            }
+            document.querySelectorAll('.major-tab-button').forEach(b => b.classList.toggle('active', b.dataset.major === majorName));
+            updateSchoolOnlyTabs();
+            // reload data for this major
+            loadTasks();
+            loadActivities();
+            updateActiveTabLabel();
+            // keep current subview
+            switchSubView(activeView);
+        }
+
+        function switchSubView(viewName) {
+            if (viewName === 'Study' && activeTab !== 'School') {
+                viewName = 'Dashboard';
+            }
+            if (viewName === 'Reminders' && activeTab !== 'Home') {
+                viewName = 'Dashboard';
+            }
+            activeView = viewName;
+            document.querySelectorAll('.sub-tab-button').forEach(b => b.classList.toggle('active', b.dataset.sub === viewName));
+
+            if (viewName === 'Tasks') {
+                loadTasks();
+                document.getElementById('activityList').style.display = 'none';
+                document.getElementById('taskList').style.display = 'block';
+                displayTasks();
+            } else if (viewName === 'Activities') {
+                loadActivities();
+                // show activities view inside Tasks area
+                document.getElementById('activityList').style.display = 'block';
+                document.getElementById('taskList').style.display = 'none';
+                displayActivities();
+            } else if (viewName === 'Dashboard') {
+                updateDashboard();
+            } else if (viewName === 'Reminders') {
+                loadReminders();
+                displayReminders();
+            } else if (viewName === 'Calendar') {
+                renderCalendar();
+                updateCalendarTasksList(selectedCalendarDate);
+            } else if (viewName === 'Notes') {
+                currentNotePage = 1;
+                loadAndDisplayNotes();
+                document.getElementById("notesEditor").focus();
+            } else if (viewName === 'Study') {
+                renderStudyProgress();
+                renderStudyChat();
+            }
+
+            updateTabView();
+            updateModalButton();
+            updateActiveTabLabel();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById("calendarGrid");
+            grid.innerHTML = "";
+            updateCalendarMonthLabel();
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const startDay = firstDay.getDay();
+            const startDate = new Date(year, month, 1 - startDay);
+            const allActivities = loadAllActivities();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                const isCurrentMonth = date.getMonth() === month;
+                const dayCell = document.createElement("div");
+                dayCell.className = "calendar-day";
+                if (!isCurrentMonth) {
+                    dayCell.classList.add("other-month");
+                }
+                if (isSameDate(date, selectedCalendarDate)) {
+                    dayCell.classList.add("selected");
+                }
+                if (isSameDate(date, today)) {
+                    dayCell.classList.add("today");
+                }
+
+                const dayNumber = document.createElement("div");
+                dayNumber.className = "calendar-day-number";
+                dayNumber.textContent = date.getDate();
+                dayCell.appendChild(dayNumber);
+
+                const actsOnDate = allActivities.filter(act => {
+                    if (!act.dueDate) return false;
+                    const due = parseLocalDate(act.dueDate);
+                    due.setHours(0, 0, 0, 0);
+                    return isSameDate(due, date);
+                });
+                const holidaysOnDate = getHolidaysOnDate(date);
+
+                if (actsOnDate.length > 0 || holidaysOnDate.length > 0) {
+                    const badges = document.createElement("div");
+                    badges.className = "calendar-day-badges";
+
+                    holidaysOnDate.forEach(holiday => {
+                        const holidayBadge = document.createElement("div");
+                        holidayBadge.className = "calendar-holiday-badge";
+                        holidayBadge.textContent = holiday.name;
+                        holidayBadge.title = "Holiday";
+                        badges.appendChild(holidayBadge);
+                    });
+
+                    if (actsOnDate.length > 0) {
+                        const badge = document.createElement("div");
+                        badge.className = "calendar-task-badge";
+                        badge.textContent = `${actsOnDate.length} activit${actsOnDate.length === 1 ? 'y' : 'ies'}`;
+                        badges.appendChild(badge);
+                    }
+
+                    dayCell.appendChild(badges);
+                }
+
+                dayCell.addEventListener("click", function () {
+                    selectedCalendarDate = new Date(date);
+                    renderCalendar();
+                    openDayModal(selectedCalendarDate);
+                    updateCalendarTasksList(selectedCalendarDate);
+                });
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        function updateCalendarTasksList(date) {
+            const container = document.getElementById("calendarTasksList");
+            container.innerHTML = "";
+            const allActivities = loadAllActivities();
+            const actsOnDate = allActivities.filter(act => {
+                if (!act.dueDate) return false;
+                const due = parseLocalDate(act.dueDate);
+                due.setHours(0, 0, 0, 0);
+                return isSameDate(due, date);
+            });
+            const holidaysOnDate = getHolidaysOnDate(date);
+
+            const dateStr = date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const heading = document.createElement("h3");
+            heading.textContent = `Schedule for ${dateStr}`;
+            container.appendChild(heading);
+
+            if (holidaysOnDate.length > 0) {
+                holidaysOnDate.forEach(holiday => {
+                    const row = document.createElement("div");
+                    row.className = "calendar-task-row holiday-row";
+                    row.innerHTML = `<strong>${holiday.name}</strong><span class="calendar-holiday-label">Holiday</span>`;
+                    container.appendChild(row);
+                });
+            }
+
+            if (actsOnDate.length === 0 && holidaysOnDate.length === 0) {
+                const empty = document.createElement("p");
+                empty.textContent = "Nothing is scheduled for this day.";
+                empty.style.color = "#64748b";
+                container.appendChild(empty);
+                return;
+            }
+
+            actsOnDate.forEach(act => {
+                const row = document.createElement("div");
+                row.className = "calendar-task-row";
+                row.innerHTML = `<strong>${act.text}</strong><span class="calendar-task-label">${act.tab}</span>`;
+                container.appendChild(row);
+            });
+        }
+
+        function isSameDate(a, b) {
+            return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+        }
+
+        function changeCalendarMonth(offset) {
+            calendarDate.setMonth(calendarDate.getMonth() + offset);
+            renderCalendar();
+            updateCalendarTasksList(selectedCalendarDate);
+        }
+
+        function changeCalendarMonth(offset) {
+            calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + offset, 1);
+            renderCalendar();
+            updateCalendarTasksList(selectedCalendarDate);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadShowHolidaysSetting();
+            loadThemeSetting();
+            loadReminders();
+            applyTheme(activeTheme);
+            startReminderScheduler();
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) checkReminders();
+            });
+
+            const showHolidaysToggle = document.getElementById('showHolidaysToggle');
+            if (showHolidaysToggle) {
+                showHolidaysToggle.checked = showHolidays;
+                showHolidaysToggle.addEventListener('change', function () {
+                    showHolidays = showHolidaysToggle.checked;
+                    saveShowHolidaysSetting();
+                    if (activeView === 'Calendar') {
+                        renderCalendar();
+                        updateCalendarTasksList(selectedCalendarDate);
+                    }
+                });
+            }
+
+            const changeThemeButton = document.getElementById('changeThemeButton');
+            if (changeThemeButton) changeThemeButton.addEventListener('click', openThemeModal);
+            document.getElementById('closeThemeModalButton').addEventListener('click', closeThemeModal);
+            document.getElementById('themeModalBackdrop').addEventListener('click', function (event) {
+                if (event.target === this) closeThemeModal();
+            });
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', function () {
+                    applyTheme(this.dataset.theme);
+                    closeThemeModal();
+                });
+            });
+
+            document.querySelectorAll('.major-tab-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    switchMajor(this.dataset.major);
+                });
+            });
+
+            document.querySelectorAll('.sub-tab-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    switchSubView(this.dataset.sub);
+                });
+            });
+
+            // Top controls
+            const topCalendar = document.getElementById('topCalendarButton');
+            if (topCalendar) topCalendar.addEventListener('click', () => switchSubView('Calendar'));
+            const topAi = document.getElementById('topAiButton');
+            if (topAi) topAi.addEventListener('click', () => {
+                assistantPanel.classList.toggle('fullscreen');
+                assistantPanel.classList.toggle('active');
+            });
+
+            document.getElementById("openModalButton").addEventListener("click", openModal);
+            document.getElementById("cancelButton").addEventListener("click", closeModal);
+            document.getElementById("saveTaskButton").addEventListener("click", handleSaveTask);
+            document.getElementById("openReminderModalButton").addEventListener("click", openReminderModal);
+            document.getElementById("openReminderModalFromDashboard").addEventListener("click", openReminderModal);
+            document.getElementById("openRemindersTabButton").addEventListener("click", function () {
+                switchSubView('Reminders');
+            });
+            document.getElementById("cancelReminderButton").addEventListener("click", closeReminderModal);
+            document.getElementById("saveReminderButton").addEventListener("click", handleSaveReminder);
+            document.getElementById("reminderModalBackdrop").addEventListener("click", function (event) {
+                if (event.target === this) closeReminderModal();
+            });
+            document.getElementById("reminderDismissButton").addEventListener("click", dismissActiveReminder);
+            document.getElementById("reminderSnoozeButton").addEventListener("click", snoozeActiveReminder);
+            document.getElementById("reminderSoundBarDismiss").addEventListener("click", dismissActiveReminder);
+            document.getElementById("reminderSoundBarSnooze").addEventListener("click", snoozeActiveReminder);
+            document.getElementById("reminderAlertBackdrop").addEventListener("click", function (event) {
+                if (event.target === this) dismissActiveReminder();
+            });
+            document.getElementById("modalBackdrop").addEventListener("click", function (event) {
+                if (event.target === this) {
+                    closeModal();
+                }
+            });
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closeModal();
+                    closeThemeModal();
+                    closeReminderModal();
+                    closeDayModal();
+                    if (document.getElementById('reminderAlertBackdrop').classList.contains('active')) {
+                        dismissActiveReminder();
+                    }
+                }
+            });
+
+            document.getElementById("prevMonthButton").addEventListener("click", function () {
+                changeCalendarMonth(-1);
+            });
+            document.getElementById("nextMonthButton").addEventListener("click", function () {
+                changeCalendarMonth(1);
+            });
+
+            // Day modal listeners
+            document.getElementById("dayModalClose").addEventListener("click", closeDayModal);
+            document.getElementById("dayModalBackdrop").addEventListener("click", function (event) {
+                if (event.target === this) {
+                    closeDayModal();
+                }
+            });
+
+            // Notes auto-save
+            const notesEditor = document.getElementById("notesEditor");
+            const notesStatus = document.getElementById("notesStatus");
+            
+            notesEditor.addEventListener("input", function () {
+                notesStatus.textContent = "Saving...";
+                notesStatus.className = "notes-status saving";
+
+                clearTimeout(notesAutoSaveTimeout);
+                notesAutoSaveTimeout = setTimeout(function () {
+                    saveNotes(notesEditor.value);
+                    notesStatus.textContent = "Saved";
+                    notesStatus.className = "notes-status saved";
+                    setTimeout(() => {
+                        if (notesStatus.textContent === "Saved") {
+                            notesStatus.textContent = "Ready";
+                            notesStatus.className = "notes-status";
+                        }
+                    }, 2000);
+                }, 1000);
+            });
+
+            // Note page navigation
+            const newPageBtn = document.getElementById("newNotePageButton");
+            const prevPageBtn = document.getElementById("prevNotePageButton");
+            const nextPageBtn = document.getElementById("nextNotePageButton");
+            
+            if (newPageBtn) newPageBtn.addEventListener("click", createNewNotePage);
+            if (prevPageBtn) prevPageBtn.addEventListener("click", () => goToNotePage(currentNotePage - 1));
+            if (nextPageBtn) nextPageBtn.addEventListener("click", () => goToNotePage(currentNotePage + 1));
+
+            initializeStudyApp();
+            switchMajor(activeTab);
+            switchSubView(activeView);
+        });
+
+        // Assistant logic
+        const assistantButton = document.getElementById('assistantButton');
+        const assistantPanel = document.getElementById('assistantPanel');
+        const assistantMessages = document.getElementById('assistantMessages');
+        const assistantInput = document.getElementById('assistantInput');
+        const assistantSend = document.getElementById('assistantSend');
+
+        assistantButton.addEventListener('click', () => {
+            assistantPanel.classList.toggle('active');
+        });
+
+        const assistantFullscreen = document.getElementById('assistantFullscreen');
+        assistantFullscreen.addEventListener('click', () => {
+            assistantPanel.classList.toggle('fullscreen');
+        });
+
+        // Load saved permission state
+        const assistantCreateToggle = document.getElementById('assistantCreateToggle');
+        try {
+            const saved = localStorage.getItem('assistantCreateAllowed');
+            assistantCreateToggle.checked = saved === 'true';
+        } catch (e) { }
+
+        assistantCreateToggle.addEventListener('change', () => {
+            try { localStorage.setItem('assistantCreateAllowed', assistantCreateToggle.checked ? 'true' : 'false'); } catch (e) { }
+        });
+
+        function addActivityToTab(tab, act) {
+            const key = getActivityStorageKey(tab);
+            try {
+                const saved = localStorage.getItem(key);
+                const arr = saved ? JSON.parse(saved) : [];
+                arr.push(act);
+                localStorage.setItem(key, JSON.stringify(arr));
+                if (tab === activeTab) {
+                    activities.push(act);
+                }
+            } catch (e) { console.warn('Failed to add activity', e); }
+        }
+
+        function addTaskToTab(tab, task) {
+            const key = getStorageKey(tab);
+            try {
+                const saved = localStorage.getItem(key);
+                const arr = saved ? JSON.parse(saved) : [];
+                arr.push(task);
+                localStorage.setItem(key, JSON.stringify(arr));
+                if (tab === activeTab) {
+                    tasks.push(task);
+                }
+            } catch (e) { console.warn('Failed to add task', e); }
+        }
+
+        function processAssistantCommands(text) {
+            const allowed = assistantCreateToggle.checked;
+            if (!allowed) return;
+            const raw = String(text || '');
+
+            function extractJSONWithItems(str) {
+                // Try to locate the nearest JSON object that contains an "items" array.
+                const itemsIndex = str.indexOf('"items"');
+                if (itemsIndex !== -1) {
+                    // find opening brace before itemsIndex
+                    let start = str.lastIndexOf('{', itemsIndex);
+                    if (start !== -1) {
+                        // find matching closing brace
+                        let depth = 0;
+                        for (let i = start; i < str.length; i++) {
+                            if (str[i] === '{') depth++;
+                            else if (str[i] === '}') {
+                                depth--;
+                                if (depth === 0) {
+                                    const candidate = str.slice(start, i + 1);
+                                    try {
+                                        const parsed = JSON.parse(candidate);
+                                        if (parsed && Array.isArray(parsed.items)) return parsed;
+                                    } catch (e) {
+                                        // ignore
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Fallback: try all curly-brace groups
+                const regex = /{[^}]*}/g;
+                let m;
+                while ((m = regex.exec(str)) !== null) {
+                    try {
+                        const parsed = JSON.parse(m[0]);
+                        if (parsed && Array.isArray(parsed.items)) return parsed;
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+
+                return null;
+            }
+
+            const parsed = extractJSONWithItems(raw);
+            if (!parsed) {
+                appendMessage('Assistant did not return a recognized create payload; no items were created.', 'bot');
+                return;
+            }
+
+            const created = [];
+            for (const item of parsed.items) {
+                if (!item || !item.type || !item.tab || !item.text) continue;
+                const type = item.type === 'Activity' ? 'Activity' : 'Task';
+                const tab = item.tab === 'School' ? 'School' : 'Home';
+                const dueDate = item.dueDate || '';
+                const textBody = item.text;
+
+                if (type === 'Activity') {
+                    const act = { text: textBody, dueDate };
+                    addActivityToTab(tab, act);
+                    created.push({ type: 'Activity', tab, text: act.text, dueDate });
+                } else {
+                    const task = { text: textBody, dueDate, completed: false };
+                    addTaskToTab(tab, task);
+                    created.push({ type: 'Task', tab, text: task.text, dueDate });
+                }
+            }
+
+            if (created.length > 0) {
+                // Refresh UI where appropriate
+                if (taskViews.includes(activeView)) displayTasks();
+                if (activeView === 'Calendar') {
+                    renderCalendar();
+                    updateCalendarTasksList(selectedCalendarDate);
+                }
+                created.forEach(c => appendMessage(`Created ${c.type} in ${c.tab}: ${c.text} ${c.dueDate ? '(' + c.dueDate + ')' : ''}`, 'bot'));
+            }
+        }
+
+        function appendMessage(text, who = 'bot') {
+            const div = document.createElement('div');
+            div.className = `assistant-msg ${who}`;
+            div.textContent = text;
+            assistantMessages.appendChild(div);
+            assistantMessages.scrollTop = assistantMessages.scrollHeight;
+        }
+
+        async function askAssistant(prompt) {
+            appendMessage(prompt, 'user');
+
+            // Gather tasks context
+            const all = loadAllTasks();
+            const context = all.map(t => `${t.tab}: ${t.text}${t.dueDate ? ' (due ' + t.dueDate + ')' : ''}${t.completed ? ' [done]' : ''}`).join('\n');
+
+            appendMessage('Thinking...', 'bot');
+
+            // Replace with your GROQ API endpoint/key
+            const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+            const GROQ_API_KEY = 'YOUR_API_KEY_HERE'; // <-- Paste your API key here
+
+            if (!GROQ_API_KEY) {
+                const thinking = assistantMessages.querySelector('.assistant-msg.bot:last-child');
+                if (thinking) thinking.remove();
+                appendMessage('No API key configured. Open Planner.html and paste your key at the line: GROQ_API_KEY = ""', 'bot');
+                return;
+            }
+
+            try {
+                const systemMsg = 'You are a helpful planner assistant. The user has the following tasks:\n\n' + context + '\n\nHelp them manage and organize their tasks. If the user asks you to create or schedule a task or activity, answer naturally and also append a single JSON object at the end of your reply with the structure {"items":[{"type":"Activity","tab":"Home","dueDate":"YYYY-MM-DD","text":"..."}]}. If there is nothing to create, the JSON should be {"items":[]}. Use exact values Task or Activity for type and School or Home for tab. Do not add any extra text inside the JSON object.';
+                const body = {
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [
+                        { role: 'system', content: systemMsg },
+                        { role: 'user', content: prompt }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1000
+                };
+                console.debug('GROQ request', GROQ_API_URL, body);
+
+                const res = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const thinking = assistantMessages.querySelector('.assistant-msg.bot:last-child');
+                if (thinking) thinking.remove();
+
+                if (!res.ok) {
+                    let text = '';
+                    try { text = await res.text(); } catch (e) { text = '(no response body)'; }
+                    appendMessage(`GROQ API error ${res.status}: ${text}`, 'bot');
+                    console.error('GROQ error', res.status, text);
+                    return;
+                }
+
+                const json = await res.json();
+                const answer = json.choices?.[0]?.message?.content || JSON.stringify(json, null, 2);
+                appendMessage(answer, 'bot');
+                // If user has allowed assistant to create items, parse commands
+                try {
+                    processAssistantCommands(answer);
+                } catch (e) {
+                    console.warn('Processing assistant commands failed', e);
+                }
+            } catch (err) {
+                const thinking = assistantMessages.querySelector('.assistant-msg.bot:last-child');
+                if (thinking) thinking.remove();
+                appendMessage('Network error contacting GROQ API. This may be CORS or file:// origin blocking; run the page on a local server or use a server-side proxy. See console for details.', 'bot');
+                console.error('GROQ request failed', err);
+            }
+        }
+
+        assistantSend.addEventListener('click', () => {
+            const val = assistantInput.value.trim();
+            if (!val) return;
+            assistantInput.value = '';
+            askAssistant(val);
+        });
+
+        assistantInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                assistantSend.click();
+            }
+        });
+    </script>
+</body>
+</html>
